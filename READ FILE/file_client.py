@@ -9,7 +9,7 @@ s.connect((server_name,server_port)) #connect to server
 
 filename = input('Enter filename: ') #provide the filename
 
-#filename = 'test_md.txt'
+#filename = 'test.txt'
 
 s.send(filename.encode()) #send the filename to the server
 
