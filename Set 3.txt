@@ -1,0 +1,122 @@
+db.createCollection("Guest")
+
+
+
+
+
+
+db.Guest.insertMany([
+    { G_id: 1, G_name: "John", G_age: 30, G_city: "Kolkata" },
+    { G_id: 2, G_name: "Alice", G_age: 25, G_city: "Kolkata" },
+    { G_id: 3, G_name: "Mike", G_age: 35, G_city: "Pune" },
+    { G_id: 4, G_name: "Emily", G_age: 28, G_city: "Pune" },
+    { G_id: 5, G_name: "David", G_age: 32, G_city: "Mumbai" },
+    { G_id: 6, G_name: "Sophia", G_age: 27, G_city: "Delhi" },
+    { G_id: 7, G_name: "Daniel", G_age: 40, G_city: "Bangalore" },
+    { G_id: 8, G_name: "Olivia", G_age: 22, G_city: "Chennai" },
+    { G_id: 9, G_name: "Michael", G_age: 45, G_city: "Hyderabad" },
+    { G_id: 10, G_name: "Emma", G_age: 29, G_city: "Jaipur" }
+]);
+
+
+
+
+
+
+
+db.createCollection("Booking")
+
+
+
+
+
+
+
+
+db.Booking.insertMany([
+    { B_id: 1, G_id: 1, Hotel_name: "Taj Bengal", Hotel_city: "Kolkata", Room_type: "Deluxe", Price: 5000, Date_from: new Date("2023-12-20"), Date_to: new Date("2023-12-25") },
+    { B_id: 2, G_id: 2, Hotel_name: "Radisson Blu", Hotel_city: "Pune", Room_type: "Standard", Price: 4000, Date_from: new Date("2023-11-10"), Date_to: new Date("2023-11-15") },
+    { B_id: 3, G_id: 3, Hotel_name: "Taj Bengal", Hotel_city: "Kolkata", Room_type: "Deluxe", Price: 5500, Date_from: new Date("2023-12-28"), Date_to: new Date("2024-01-02") },
+    { B_id: 4, G_id: 4, Hotel_name: "Oberoi Amarvilas", Hotel_city: "Agra", Room_type: "Deluxe", Price: 7500, Date_from: new Date("2023-10-05"), Date_to: new Date("2023-10-10") },
+    { B_id: 5, G_id: 5, Hotel_name: "The Leela Palace", Hotel_city: "Delhi", Room_type: "Suite", Price: 10000, Date_from: new Date("2023-09-15"), Date_to: new Date("2023-09-20") },
+    { B_id: 6, G_id: 6, Hotel_name: "ITC Mughal", Hotel_city: "Agra", Room_type: "Standard", Price: 3500, Date_from: new Date("2023-11-25"), Date_to: new Date("2023-11-30") },
+    { B_id: 7, G_id: 7, Hotel_name: "Taj Bengal", Hotel_city: "Kolkata", Room_type: "Standard", Price: 4500, Date_from: new Date("2023-12-10"), Date_to: new Date("2023-12-15") },
+    { B_id: 8, G_id: 8, Hotel_name: "Trident", Hotel_city: "Agra", Room_type: "Deluxe", Price: 6000, Date_from: new Date("2023-11-05"), Date_to: new Date("2023-11-10") },
+    { B_id: 9, G_id: 9, Hotel_name: "Taj Mahal Hotel", Hotel_city: "Agra", Room_type: "Deluxe", Price: 7000, Date_from: new Date("2023-10-20"), Date_to: new Date("2023-10-25") },
+    { B_id: 10, G_id: 10, Hotel_name: "Taj Bengal", Hotel_city: "Kolkata", Room_type: "Suite", Price: 8000, Date_from: new Date("2023-12-05"), Date_to: new Date("2023-12-10") }
+]);
+
+
+
+
+
+
+
+
+
+db.Guest.find({ G_city: "Kolkata" }).count()
+
+
+
+
+
+
+
+
+
+db.Booking.aggregate([
+    {
+        $group: {
+            _id: "$Hotel_name",
+            total_bookings: { $sum: 1 }
+        }
+    }
+])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+db.Guest.aggregate([
+  {
+    $lookup: {
+      from: "Booking",
+      localField: "G_id",
+      foreignField: "G_id",
+      as: "bookingDetails"
+    }
+  },
+  {
+    $match: {
+      G_city: "Pune"
+    }
+  },
+  {
+    $unwind: "$bookingDetails"
+  },
+  {
+    $project: {
+      _id: 0,
+      G_id: 1,
+      G_name: 1,
+      G_city: 1,
+      B_id: "$bookingDetails.B_id",
+      Hotel_name: "$bookingDetails.Hotel_name",
+      Hotel_city: "$bookingDetails.Hotel_city",
+      Room_type: "$bookingDetails.Room_type",
+      Price: "$bookingDetails.Price",
+      Date_from: "$bookingDetails.Date_from",
+      Date_to: "$bookingDetails.Date_to"
+    }
+  }
+])
+
