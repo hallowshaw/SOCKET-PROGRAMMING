@@ -1,11 +1,11 @@
-db.createCollection("Guest")
+2) db.createCollection("Guest")
 
 
 
 
 
 
-db.Guest.insertMany([
+3) db.Guest.insertMany([
     { G_id: 1, G_name: "John", G_age: 30, G_city: "Kolkata" },
     { G_id: 2, G_name: "Alice", G_age: 25, G_city: "Kolkata" },
     { G_id: 3, G_name: "Mike", G_age: 35, G_city: "Pune" },
@@ -24,7 +24,7 @@ db.Guest.insertMany([
 
 
 
-db.createCollection("Booking")
+4) db.createCollection("Booking")
 
 
 
@@ -33,7 +33,7 @@ db.createCollection("Booking")
 
 
 
-db.Booking.insertMany([
+5) db.Booking.insertMany([
     { B_id: 1, G_id: 1, Hotel_name: "Taj Bengal", Hotel_city: "Kolkata", Room_type: "Deluxe", Price: 5000, Date_from: new Date("2023-12-20"), Date_to: new Date("2023-12-25") },
     { B_id: 2, G_id: 2, Hotel_name: "Radisson Blu", Hotel_city: "Pune", Room_type: "Standard", Price: 4000, Date_from: new Date("2023-11-10"), Date_to: new Date("2023-11-15") },
     { B_id: 3, G_id: 3, Hotel_name: "Taj Bengal", Hotel_city: "Kolkata", Room_type: "Deluxe", Price: 5500, Date_from: new Date("2023-12-28"), Date_to: new Date("2024-01-02") },
@@ -54,7 +54,7 @@ db.Booking.insertMany([
 
 
 
-db.Guest.find({ G_city: "Kolkata" }).count()
+6) db.Guest.find({ G_city: "Kolkata" }).count()
 
 
 
@@ -64,7 +64,7 @@ db.Guest.find({ G_city: "Kolkata" }).count()
 
 
 
-db.Booking.aggregate([
+7) db.Booking.aggregate([
     {
         $group: {
             _id: "$Hotel_name",
@@ -76,6 +76,45 @@ db.Booking.aggregate([
 
 
 
+8) db.Booking.find({ Date_from: { $lt: ISODate("2024-01-26") } }).sort({ Date_from: 1 })
+
+
+
+
+
+
+9) db.Booking.aggregate([
+    {
+        $match: { Room_type: "Deluxe" }
+    },
+    {
+        $group: {
+            _id: "$Hotel_name",
+            avg_price: { $avg: "$Price" }
+        }
+    }
+])
+
+
+
+
+
+10) db.Booking.updateMany(
+    { Hotel_name: "Taj Bengal", Room_type: "Deluxe" },
+    { $mul: { Price: 2 } }
+)
+
+
+
+
+
+11) db.createView(
+    "Booking_Agra",
+    "Booking",
+    [
+        { $match: { Hotel_city: "Agra" } }
+    ]
+)
 
 
 
@@ -83,10 +122,7 @@ db.Booking.aggregate([
 
 
 
-
-
-
-db.Guest.aggregate([
+12) db.Guest.aggregate([
   {
     $lookup: {
       from: "Booking",
